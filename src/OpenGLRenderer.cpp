@@ -1,19 +1,23 @@
 #include "OpenGLRenderer.h"
 #include <iostream>
 
+
 OpenGLRenderer::OpenGLRenderer(Matrix& m, float w, float h)
     : matrix(m), screenWidth(w), screenHeight(h), window(nullptr) {
 
     float totalNodesH = matrix.cols();
     float totalNodesV = matrix.rows();
 
-    // El 0.9 es para asegurarnos de que ocupamos el 90% del espacio de la pantalla.
-    float availableWidth = 0.9f * 2.0f;  // -1 a 1 en coordenadas OpenGL
-    float availableHeight = 0.9f * 2.0f;
+    // Asumiendo un porcentaje fijo para el espacio total que los espacios ocuparán.
+    float spacingPercentage = 0.1; // 10% del total, ajusta según tus necesidades
+    float totalSpace = 2.0 * spacingPercentage; // el rango completo [-1, 1] multiplicado por el porcentaje
 
-    // Calculando el tamaño del nodo y el espaciado para caber dentro del área disponible.
-    nodeSize = availableWidth / (totalNodesH + totalNodesV);
-    spacing = 0.1f * nodeSize;  // El espaciado es el 10% del tamaño del nodo.
+    float totalSpacesH = totalNodesH - 1;
+    float totalSpacesV = totalNodesV - 1;
+
+    spacing = 3 * totalSpace / (totalSpacesH + totalSpacesV); // divido entre el total de espacios en ambas direcciones
+
+    nodeSize = (2.0 - totalSpace) / (totalNodesH + totalNodesV); // el espacio restante después de restar el totalSpace
 }
 
 OpenGLRenderer::~OpenGLRenderer() {
@@ -41,17 +45,27 @@ void OpenGLRenderer::initialize() {
     glfwSetWindowUserPointer(window, this);
 }
 
+
 void OpenGLRenderer::drawNode(int x, int y) {
     glColor3f(0, 1, 0);  // verde
 
     float adjustedSize = nodeSize - spacing;
+    float totalWidth = nodeSize * matrix.cols() + spacing * (matrix.cols() - 1);
+    float totalHeight = nodeSize * matrix.rows() + spacing * (matrix.rows() - 1);
 
-    // El margen es el 5% del total de la pantalla (anteriormente asumimos que íbamos a ocupar el 90%)
-    float marginLeft = 0.05f * 2.0f;  // -1 a 1 en coordenadas OpenGL
-    float marginTop = 0.05f * 2.0f;
+    // Centrando el diseño completo de nodos en el espacio de coordenadas.
+    float startX = -1.0 + (2.0 - totalWidth) / 2.0;
+    float startY = 0.7 - nodeSize - (2.0 - totalHeight) / 2.0;
 
-    float center_x = marginLeft + (x * (nodeSize + spacing));
-    float center_y = 1.0f - (marginTop + y * (nodeSize + spacing)); // El "1.0f -" es porque OpenGL tiene y positivo hacia arriba
+    float center_x = startX + x * (nodeSize + spacing);
+    float center_y = startY - y * (nodeSize + spacing);
+
+    if (x % 10 == 0 && y % 10 == 0) {
+        std::cout << "Node en: " << x << " , " << y << " center_x: " << center_x
+                  << " center_y: " << center_y << std::endl;
+
+        glColor3f(0, 1, 1);  // verde
+    }
 
     int segments = 100;
 
@@ -60,11 +74,10 @@ void OpenGLRenderer::drawNode(int x, int y) {
         float theta = (float)(i) / segments * 2.0 * 3.1415926;
         float dx = adjustedSize / 2 * cosf(theta);
         float dy = adjustedSize / 2 * sinf(theta);
-        glVertex2f(center_x + dx, center_y - dy);  // Invierte dy para que el nodo se dibuje correctamente
+        glVertex2f(center_x + dx, center_y + dy);
     }
     glEnd();
 }
-
 void OpenGLRenderer::drawLink(int x1, int y1, int x2, int y2) {
     glColor3f(0.7f, 0.7f, 0.7f); // color del enlace (gris claro)
 
