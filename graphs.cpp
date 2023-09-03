@@ -3,6 +3,10 @@
 #include <list>
 #include <stack>
 #include <queue>
+#include <random>
+#include <algorithm>
+#include <ctime>
+#include <cmath>
 using namespace std;
 
 template<class G>
@@ -23,6 +27,8 @@ public:
     typedef NN N;
     typedef EE E;
     vector<Node*> Nodes;
+
+
     Node* insertar_node(E value) {
         Node* temp = new Node(value);
         Nodes.push_back(temp);
@@ -43,7 +49,7 @@ public:
         aris->nodes[1]->edges.remove(aris);
         delete aris;
     }
-    void delete_node(Node* a) {
+    void delete_node(vector<vector<Node*>>& matrix,Node* a) {
         int i = 0;
         while (!a->edges.empty()) {
             delete_edge(a->edges.front());;
@@ -52,7 +58,16 @@ public:
             i++;
         }
 
+        //recorre la matriz para buscar los eliminados y poner nullptr en esos espacios
         Nodes.erase(Nodes.begin() + i);
+        for (int row = 0; row < matrix.size(); ++row) {
+            for (int col = 0; col < matrix[row].size(); ++col) {
+                if (matrix[row][col] == a) {
+                    matrix[row][col] = nullptr;
+                    break;
+                }
+            }
+        }
         delete a;
     };
     void DFS(Node* node, vector<bool>& visited) {
@@ -112,67 +127,145 @@ public:
         reverse(path.begin(), path.end());
         return path;
     }
-};
-//en clases esta de default en private
 
-template<class G>
-class CNode {
-
-public:
-    typedef typename G::N N;
-    typedef typename G::Edge Edge;
-    N value;
-    list<Edge*> edges;
-
-    CNode(N valor) {
-        value = valor;
-    }
-};
-
-template <class G>
-class Cedge {
-
-public:
-    typedef typename G::E E;
-    typedef typename G::Node Node;
-    E value;
-    Node* nodes[2];
-    bool dir;
-
-    Cedge(Node* a, Node* b, E e, bool d) {
-        nodes[0] = a;
-        nodes[1] = b;
-        value = e;
-        dir = d;
-    }
-};
-
-
-
-int main()
-{
-    Cgraph<int, int> grafo;
-    CNode<Cgraph<int, int>>* A = grafo.insertar_node(0);
-    CNode<Cgraph<int, int>>* B = grafo.insertar_node(1);
-    CNode<Cgraph<int, int>>* C = grafo.insertar_node(2);
-    CNode<Cgraph<int, int>>* D = grafo.insertar_node(3);
-    Cedge<Cgraph<int, int>>* A1 = grafo.insertar_edge(A, B, 1, 1);
-    Cedge<Cgraph<int, int>>* A2 = grafo.insertar_edge(B, C, 2, 1);
-    Cedge<Cgraph<int, int>>* A3 = grafo.insertar_edge(C, D, 3, 1);
-    Cedge<Cgraph<int, int>>* A4 = grafo.insertar_edge(D, A, 4, 1);
-
-    pair<vector<int>, vector<CNode<Cgraph<int, int>>*>> result = grafo.dijkstra(A);
-    vector<int> dist = result.first;
-    vector<CNode<Cgraph<int, int>>*> prev = result.second;
-    for (int i = 0; i < dist.size(); i++) {
-        cout << "Distance from node " << A->value << " to node " << i << ": " << dist[i] << endl;
-        vector<CNode<Cgraph<int, int>>*> path = grafo.get_path(prev, grafo.Nodes[i]);
-        cout << "Path: ";
-        for (CNode<Cgraph<int, int>>* node : path) {
-            cout << node->value << " ";
+    void matrix_nodes(vector<vector<Node*>>& matrix) {
+        for (auto& row : matrix) {
+            for (auto& column : row) {
+                column = insertar_node(1);
+            }
         }
-        cout << endl;
+    };
+
+    void print_nodes(vector<vector<Node*>>& matrix) {
+        for (auto& row : matrix) {
+            for (auto& column : row) {
+                if (column == nullptr) cout << "0 ";
+                else  cout <<column->value << " ";
+            }
+            cout << endl;
+        }
+    };
+
+    void connect_nodes(vector<vector<Node*>>& matrix) {
+        for (int i = 0; i < matrix.size(); ++i) {
+            for (int j = 0; j < matrix[i].size(); ++j) {
+                Node* actual_node = matrix[i][j];
+
+                if (i + 1 < matrix.size()) {
+                    Node* node_down = matrix[i + 1][j];
+                    insertar_edge(actual_node, node_down, 1, 1);
+                }
+                if (j + 1 < matrix[i].size()) {
+                    Node* node_right = matrix[i][j + 1];
+                    insertar_edge(actual_node, node_right, 1, 1);
+                }
+                if (i + 1 < matrix.size() && j + 1 < matrix[i].size()) {
+                    Node* right_diagonal_node = matrix[i + 1][j + 1];
+                    insertar_edge(actual_node, right_diagonal_node, 1, 1);
+                }
+                if (i + 1 < matrix.size() && j - 1 < matrix[i].size()) {
+                    Node* left_diagonal_node = matrix[i + 1][j - 1];
+                    insertar_edge(actual_node, left_diagonal_node, 1, 1);
+                }
+            }
+        }
     }
 
-    return 0;
-}
+    void ThanosSnap(vector<vector<Node*>>& matrix, float percentage) {
+        // Calculate number of victims
+        int victims = floor(matrix.size() * matrix[0].size() * percentage / 100);
+
+        // Collect all node indices
+        std::vector<std::pair<int, int>> indices;
+        for (int i = 0; i < matrix.size(); ++i) {
+            for (int j = 0; j < matrix[i].size(); ++j) {
+                indices.emplace_back(i, j);
+            }
+        }
+
+        // Shuffle the indices randomly
+        std::shuffle(indices.begin(), indices.end(), std::default_random_engine(std::time(nullptr)));
+
+        // Eliminate victims
+        for (int i = 0; i < victims; ++i) {
+            int row = indices[i].first;
+            int col = indices[i].second;
+            delete_node(matrix,matrix[row][col]);
+        }
+        if (percentage == 50) { cout << "Thanos lo logro" << endl << endl; }
+        else if (percentage > 50) { cout << "Thanos se paso con el chasquido" << endl << endl; }
+        else { cout << "thanos chasqueo maso :/" << endl << endl; }
+
+    }
+};
+
+    template<class G>
+    class CNode {
+
+    public:
+        typedef typename G::N N;
+        typedef typename G::Edge Edge;
+        N value;
+        list<Edge*> edges;
+
+        CNode(N valor) {
+            value = valor;
+        }
+    };
+
+    template <class G>
+    class Cedge {
+
+    public:
+        typedef typename G::E E;
+        typedef typename G::Node Node;
+        E value;
+        Node* nodes[2];
+        bool dir;
+
+        Cedge(Node* a, Node* b, E e, bool d) {
+            nodes[0] = a;
+            nodes[1] = b;
+            value = e;
+            dir = d;
+        }
+    };
+
+
+    
+
+    int main()
+    {
+        Cgraph<int, int> grafo;
+        cout << "inserta filas y luego columnas " << endl;
+        int rows, columns;
+        cin >> rows >> columns;
+        vector<vector<CNode<Cgraph<int, int>>*>> matrix(rows, vector<CNode<Cgraph<int, int>>*>(columns));
+        grafo.matrix_nodes(matrix);
+        grafo.connect_nodes(matrix);
+        grafo.print_nodes(matrix);
+        cout << "porcentaje a eliminar";
+        int percentage;
+        cin >> percentage;
+        grafo.ThanosSnap(matrix,percentage);
+        grafo.print_nodes(matrix);
+
+        return 0;
+    }
+
+
+
+
+
+    //pair<vector<int>, vector<CNode<Cgraph<int, int>>*>> result = grafo.dijkstra(A);
+    //vector<int> dist = result.first;
+    //vector<CNode<Cgraph<int, int>>*> prev = result.second;
+    //for (int i = 0; i < dist.size(); i++) {
+    //    cout << "Distance from node " << A->value << " to node " << i << ": " << dist[i] << endl;
+    //    vector<CNode<Cgraph<int, int>>*> path = grafo.get_path(prev, grafo.Nodes[i]);
+    //    cout << "Path: ";
+    //    for (CNode<Cgraph<int, int>>* node : path) {
+    //        cout << node->value << " ";
+    //    }
+    //    cout << endl;
+    //
