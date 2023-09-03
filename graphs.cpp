@@ -127,7 +127,7 @@ public:
         reverse(path.begin(), path.end());
         return path;
     }
-
+//crea la matriz de nodos
     void matrix_nodes(vector<vector<Node*>>& matrix) {
         for (auto& row : matrix) {
             for (auto& column : row) {
@@ -135,7 +135,7 @@ public:
             }
         }
     };
-
+//imprime nodos 
     void print_nodes(vector<vector<Node*>>& matrix) {
         for (auto& row : matrix) {
             for (auto& column : row) {
@@ -145,7 +145,7 @@ public:
             cout << endl;
         }
     };
-
+// los conecta con aristas
     void connect_nodes(vector<vector<Node*>>& matrix) {
         for (int i = 0; i < matrix.size(); ++i) {
             for (int j = 0; j < matrix[i].size(); ++j) {
@@ -170,7 +170,7 @@ public:
             }
         }
     }
-
+/Snap
     void ThanosSnap(vector<vector<Node*>>& matrix, float percentage) {
         // Calculate number of victims
         int victims = floor(matrix.size() * matrix[0].size() * percentage / 100);
