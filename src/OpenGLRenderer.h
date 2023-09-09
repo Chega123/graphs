@@ -17,7 +17,7 @@ private:
     void drawLink(int x1, int y1, int x2, int y2);
 
 public:
-    OpenGLRenderer(Matrix& m, float screenWidth = 1600.0f, float screenHeight = 1600.0f);
+    OpenGLRenderer(Matrix& m, float screenWidth = 800.0f, float screenHeight = 800.0f);
     ~OpenGLRenderer();
 
     void initialize();

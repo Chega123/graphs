@@ -2,22 +2,11 @@
 #include <iostream>
 
 
-OpenGLRenderer::OpenGLRenderer(Matrix& m, float w, float h)
+OpenGLRenderer::OpenGLRenderer(Matrix& m, float w, float h) // desaparecer la mayoria de codigo
     : matrix(m), screenWidth(w), screenHeight(h), window(nullptr) {
-
-    float totalNodesH = matrix.cols();
-    float totalNodesV = matrix.rows();
-
-    // Asumiendo un porcentaje fijo para el espacio total que los espacios ocuparán.
-    float spacingPercentage = 0.1; // 10% del total, ajusta según tus necesidades
-    float totalSpace = 2.0 * spacingPercentage; // el rango completo [-1, 1] multiplicado por el porcentaje
-
-    float totalSpacesH = totalNodesH - 1;
-    float totalSpacesV = totalNodesV - 1;
-
-    spacing = 3 * totalSpace / (totalSpacesH + totalSpacesV); // divido entre el total de espacios en ambas direcciones
-
-    nodeSize = (2.0 - totalSpace) / (totalNodesH + totalNodesV); // el espacio restante después de restar el totalSpace
+    nodeSize = 2.0f / ( 2*matrix.cols() + 1);
+    spacing = nodeSize;
+    std::cout << "Node Size: " << nodeSize << std::endl;
 }
 
 OpenGLRenderer::~OpenGLRenderer() {
@@ -46,38 +35,28 @@ void OpenGLRenderer::initialize() {
 }
 
 
-void OpenGLRenderer::drawNode(int x, int y) {
+void OpenGLRenderer::drawNode(int row, int col) { // entener lo que pasa
     glColor3f(0, 1, 0);  // verde
 
-    float adjustedSize = nodeSize - spacing;
-    float totalWidth = nodeSize * matrix.cols() + spacing * (matrix.cols() - 1);
-    float totalHeight = nodeSize * matrix.rows() + spacing * (matrix.rows() - 1);
+    const int segments = 200;
+    const float angleIncrement = 2.0f * M_PI / segments;
 
-    // Centrando el diseño completo de nodos en el espacio de coordenadas.
-    float startX = -1.0 + (2.0 - totalWidth) / 2.0;
-    float startY = 0.7 - nodeSize - (2.0 - totalHeight) / 2.0;
+    float xCenter = -1 + (col + 0.5) * (nodeSize + spacing);
+    float yCenter = -1 + (row + 0.5) * (nodeSize + spacing);
 
-    float center_x = startX + x * (nodeSize + spacing);
-    float center_y = startY - y * (nodeSize + spacing);
-
-    if (x % 10 == 0 && y % 10 == 0) {
-        std::cout << "Node en: " << x << " , " << y << " center_x: " << center_x
-                  << " center_y: " << center_y << std::endl;
-
-        glColor3f(0, 1, 1);  // verde
-    }
-
-    int segments = 100;
-
-    glBegin(GL_POLYGON);
-    for(int i = 0; i < segments; i++) {
-        float theta = (float)(i) / segments * 2.0 * 3.1415926;
-        float dx = adjustedSize / 2 * cosf(theta);
-        float dy = adjustedSize / 2 * sinf(theta);
-        glVertex2f(center_x + dx, center_y + dy);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex2f(xCenter, yCenter);
+    for (int i = 0; i < segments; i++)
+    {
+        float angle = i * angleIncrement;
+        float xOffset = cos(angle) * nodeSize * 0.5;
+        float yOffset = sin(angle) * nodeSize * 0.5;
+        glVertex2f(xCenter + xOffset, yCenter + yOffset);
     }
     glEnd();
+    
 }
+
 void OpenGLRenderer::drawLink(int x1, int y1, int x2, int y2) {
     glColor3f(0.7f, 0.7f, 0.7f); // color del enlace (gris claro)
 
