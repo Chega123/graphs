@@ -1,0 +1,14 @@
+BIN = bin/main
+CC = clang++
+FLAGS = -std=c++11 -DAPPLE -Wall -pedantic -Wextra
+INC = -I common/include -I/sw/include -I/usr/local/include
+LIB_PATH = common/osx_64/
+LOC_LIB = 
+DYN_LIB = -lGLEW -lglfw
+FRAMEWORKS = -framework Cocoa -framework OpenGL -framework IOKit
+SRC = $(wildcard src/*.cpp)
+
+all:
+	${CC} ${FLAGS} ${FRAMEWORKS} -o ${BIN} ${SRC} ${INC} ${LOC_LIB} ${DYN_LIB}
+
+
