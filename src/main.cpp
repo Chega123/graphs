@@ -3,7 +3,7 @@
 
 int main() {
     Matrix matrix(100, 100);
-    matrix.ThanosSnap(20);
+    matrix.ThanosSnap(30);
 
     OpenGLRenderer renderer(matrix);
     renderer.initialize();

@@ -57,12 +57,35 @@ void OpenGLRenderer::drawNode(int row, int col) { // entener lo que pasa
     
 }
 
-void OpenGLRenderer::drawLink(int x1, int y1, int x2, int y2) {
-    glColor3f(0.7f, 0.7f, 0.7f); // color del enlace (gris claro)
+void OpenGLRenderer::drawConnections(int i, int j) {
+    for (int dir = 0; dir < 8; dir++) {
+        int ni = i + matrix.dirX[dir];
+        int nj = j + matrix.dirY[dir];
+
+        if (ni >= 0 && ni < matrix.rows() && nj >= 0 && nj < matrix.cols())
+        {
+            if (matrix.isActive(ni, nj))
+            {
+                drawLink(i, j, ni, nj);
+            }
+            
+        }
+        
+    }
+}
+
+void OpenGLRenderer::drawLink(int i1, int j1, int i2, int j2) {
+    glColor3f(0.4f, 0.4f, 0.4f); // color del enlace (gris claro)
+
+    float x1 = -1 + (j1 + 0.5) * (nodeSize + spacing);
+    float y1 = -1 + (i1 + 0.5) * (nodeSize + spacing);
+
+    float x2 = -1 + (j2 + 0.5) * (nodeSize + spacing);
+    float y2 = -1 + (i2 + 0.5) * (nodeSize + spacing);
 
     glBegin(GL_LINES);
-    glVertex2f(x1 * (nodeSize + spacing), y1 * (nodeSize + spacing));
-    glVertex2f(x2 * (nodeSize + spacing), y2 * (nodeSize + spacing));
+    glVertex2f(x1, y1);
+    glVertex2f(x2, y2);
     glEnd();
 }
 
@@ -73,8 +96,8 @@ void OpenGLRenderer::run() {
         for (int i = 0; i < matrix.rows(); i++) {
             for (int j = 0; j < matrix.cols(); j++) {
                 if (matrix.isActive(i, j)) {
+                    drawConnections(i, j);
                     drawNode(i, j);
-                    // dibujar conexiones creo
                 }
             }
         }

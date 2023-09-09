@@ -18,10 +18,11 @@ private:
 	};
 
 	std::vector<std::vector<Node>> data;
+
+public:
 	std::vector<int> dirX;
 	std::vector<int> dirY;
 
-public:
 	Matrix(int rows, int cols);
 
 	void ThanosSnap(float percentage);

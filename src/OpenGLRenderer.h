@@ -14,6 +14,7 @@ private:
     float screenHeight;
 
     void drawNode(int x, int y);
+    void drawConnections(int i, int j);
     void drawLink(int x1, int y1, int x2, int y2);
 
 public:
