@@ -2,7 +2,7 @@
 
 using namespace std;
 
-Matrix::Node::Node() : visited(false), is_active(true) {}
+Matrix::Node::Node() : is_active(true) {}
 
 Matrix::Matrix(int rows, int cols) {
 	data.resize(rows, std::vector<Node>(cols));
@@ -44,4 +44,77 @@ int Matrix::cols() const {
 
 bool Matrix::isActive(int row, int col) const {
 	return data[row][col].is_active;
+}
+
+bool Matrix::isInside(int x, int y) {
+	return x >= 0 && y >= 0 && x < data[0].size() && y < data.size();
+}
+
+
+bool Matrix::DFS(std::pair<int, int> start, std::pair<int, int> end) {
+	std::stack<std::pair<int, int>> s;
+	s.push(start);
+
+	while (!s.empty())
+	{
+		auto [cx, cy] = s.top();
+		s.pop();
+
+		if (!isInside(cx, cy) || data[cy][cx].visited[0])
+		{
+			continue;
+		}
+		std::cout << "nodo: " << cx << " " << cy << std::endl;
+		if (std::make_pair(cx, cy) == end)
+		{
+			return true;
+		}
+		data[cy][cx].visited[0] = 1; // ya se visito
+		for (int i = 0; i < dirX.size(); i++)
+		{
+			int newX = cx + dirX[i];
+			int newY = cy + dirY[i];
+			if (isInside(newX, newY) && !data[newY][newX].visited[0])
+			{
+				s.push({newX, newY});
+			}
+			
+		}
+	}
+	
+	return false;
+}
+
+bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end) {
+	std::queue<std::pair<int, int>> q;
+	q.push(start);
+
+	while (!q.empty())
+	{
+		auto [cx, cy] = q.front();
+		q.pop();
+
+		if (!isInside(cx, cy) || data[cy][cx].visited[1])
+		{
+			continue;
+		}
+		std::cout << "nodo: " << cx << " " << cy << std::endl;
+		if (std::make_pair(cx, cy) == end)
+		{
+			return true;
+		}
+		data[cy][cx].visited[1] = 1; // ya se visito
+
+		for (int i = 0; i < dirX.size(); i++)
+		{
+			int newX = cx + dirX[i];
+			int newY = cy + dirY[i];
+			if (isInside(newX, newY) && !data[newY][newX].visited[0])
+			{
+				q.push({newX, newY});
+			}
+			
+		}
+	}
+	
 }

@@ -7,13 +7,15 @@
 #include <algorithm>
 #include <ctime>
 #include <cmath>
+#include <stack>
+#include <queue>
 
 class Matrix {
 private:
 	class Node {
 	public:
-		bool visited;
 		bool is_active;
+		int visited[2] = {0, 0}; // 0: DFS  1: BFS
 		Node();
 	};
 
@@ -32,6 +34,11 @@ public:
     int cols() const;
 
     bool isActive(int row, int col) const;
+
+	bool isInside(int x, int y);
+
+	bool DFS(std::pair<int, int> start, std::pair<int, int> end);
+	bool BFS(std::pair<int, int> start, std::pair<int, int> end);
 };
 
 #endif // MATRIX_H

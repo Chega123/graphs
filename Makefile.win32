@@ -1,4 +1,4 @@
-BIN = main.exe
+BIN = bin/main.exe
 CC = g++
 FLAGS = -Wall -pedantic -std=c++11
 INC = -I common/include

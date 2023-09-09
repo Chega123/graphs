@@ -1,4 +1,4 @@
-BIN = main
+BIN = bin/main
 CC = clang++
 FLAGS = -std=c++11 -DAPPLE -Wall -pedantic -Wextra
 INC = -I common/include -I/sw/include -I/usr/local/include

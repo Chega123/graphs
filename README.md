@@ -3,8 +3,7 @@ grapsh code for C++
 
 ### To - do
 
-- Revisar los makefiles para mac y win32
-- BFS
-- DFS
+- Revisar los makefiles para win32
 - Detectar posiciones de nodo correctamente haciendo click
-- Mas todos proximamente aldfjaldkjf
+- Graficar el bfs y dfs con visited
+- Mas to-dos proximamente aldfjaldkjf
