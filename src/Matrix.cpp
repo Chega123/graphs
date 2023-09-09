@@ -109,7 +109,7 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end) {
 		{
 			int newX = cx + dirX[i];
 			int newY = cy + dirY[i];
-			if (isInside(newX, newY) && !data[newY][newX].visited[0])
+			if (isInside(newX, newY) && !data[newY][newX].visited[1])
 			{
 				q.push({newX, newY});
 			}
