@@ -49,7 +49,7 @@ public:
         aris->nodes[1]->edges.remove(aris);
         delete aris;
     }
-    void delete_node(vector<vector<Node*>>& matrix,Node* a) {
+    void delete_node(vector<vector<Node*> >& matrix,Node* a) {
         int i = 0;
         while (!a->edges.empty()) {
             delete_edge(a->edges.front());;
@@ -92,12 +92,12 @@ public:
         }
     }
 
-    pair<vector<E>, vector<Node*>> dijkstra(Node* source) {
+    pair<vector<E>, vector<Node*> > dijkstra(Node* source) {
         vector<E> dist(Nodes.size(), numeric_limits<E>::max());
         vector<Node*> prev(Nodes.size(), nullptr);
         dist[source->value] = 0;
 
-        priority_queue<pair<E, Node*>, vector<pair<E, Node*>>, greater<pair<E, Node*>>> pq;
+        priority_queue<pair<E, Node*>, vector<pair<E, Node*> >, greater<pair<E, Node*> > > pq;
         pq.push(make_pair(0, source));
 
         while (!pq.empty()) {
@@ -128,7 +128,7 @@ public:
         return path;
     }
 //crea la matriz de nodos
-    void matrix_nodes(vector<vector<Node*>>& matrix) {
+    void matrix_nodes(vector<vector<Node*> >& matrix) {
         for (auto& row : matrix) {
             for (auto& column : row) {
                 column = insertar_node(1);
@@ -136,7 +136,7 @@ public:
         }
     };
 //imprime nodos 
-    void print_nodes(vector<vector<Node*>>& matrix) {
+    void print_nodes(vector<vector<Node*> >& matrix) {
         for (auto& row : matrix) {
             for (auto& column : row) {
                 if (column == nullptr) cout << "0 ";
@@ -146,7 +146,7 @@ public:
         }
     };
 // los conecta con aristas
-    void connect_nodes(vector<vector<Node*>>& matrix) {
+    void connect_nodes(vector<vector<Node*> >& matrix) {
         for (int i = 0; i < matrix.size(); ++i) {
             for (int j = 0; j < matrix[i].size(); ++j) {
                 Node* actual_node = matrix[i][j];
@@ -170,13 +170,14 @@ public:
             }
         }
     }
-/Snap
-    void ThanosSnap(vector<vector<Node*>>& matrix, float percentage) {
+
+//Snap
+    void ThanosSnap(vector<vector<Node*> >& matrix, float percentage) {
         // Calculate number of victims
         int victims = floor(matrix.size() * matrix[0].size() * percentage / 100);
 
         // Collect all node indices
-        std::vector<std::pair<int, int>> indices;
+        std::vector<std::pair<int, int> > indices;
         for (int i = 0; i < matrix.size(); ++i) {
             for (int j = 0; j < matrix[i].size(); ++j) {
                 indices.emplace_back(i, j);
@@ -237,14 +238,16 @@ public:
     int main()
     {
         Cgraph<int, int> grafo;
-        cout << "inserta filas y luego columnas " << endl;
+        cout << "inserta filas y luego columnas: ";
         int rows, columns;
         cin >> rows >> columns;
-        vector<vector<CNode<Cgraph<int, int>>*>> matrix(rows, vector<CNode<Cgraph<int, int>>*>(columns));
+
+        vector<vector<CNode<Cgraph<int, int> >*> > matrix(rows, vector<CNode<Cgraph<int, int> >*>(columns));
         grafo.matrix_nodes(matrix);
         grafo.connect_nodes(matrix);
         grafo.print_nodes(matrix);
-        cout << "porcentaje a eliminar";
+        
+        cout << "porcentaje a eliminar: ";
         int percentage;
         cin >> percentage;
         grafo.ThanosSnap(matrix,percentage);
