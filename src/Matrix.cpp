@@ -16,8 +16,8 @@ void Matrix::ThanosSnap(float percentage) {
 	
 	// Collect all node indices
 	std::vector<std::pair<int, int>> indices;
-	for (int i = 0; i < data.size(); ++i) {
-		for (int j = 0; j < data[i].size(); ++j) {
+	for (size_t i = 0; i < data.size(); ++i) {
+		for (size_t j = 0; j < data[i].size(); ++j) {
 			indices.emplace_back(i, j);
 		}
 	}
@@ -47,74 +47,69 @@ bool Matrix::isActive(int row, int col) const {
 }
 
 bool Matrix::isInside(int x, int y) {
-	return x >= 0 && y >= 0 && x < data[0].size() && y < data.size();
+    return x >= 0 && y >= 0 && x < static_cast<int>(data[0].size()) && y < static_cast<int>(data.size());
 }
 
+bool Matrix::DFS(std::pair<int, int> start, std::pair<int, int> end, std::vector<std::pair<int, int>>& path) {
+    std::stack<std::pair<int, int>> s;
+    s.push(start);
 
-bool Matrix::DFS(std::pair<int, int> start, std::pair<int, int> end) {
-	std::stack<std::pair<int, int>> s;
-	s.push(start);
+    while (!s.empty()) {
+        auto [cx, cy] = s.top();
+        s.pop();
 
-	while (!s.empty())
-	{
-		auto [cx, cy] = s.top();
-		s.pop();
+        if (!isInside(cx, cy) || data[cy][cx].visited[0]) {
+            continue;
+        }
 
-		if (!isInside(cx, cy) || data[cy][cx].visited[0])
-		{
-			continue;
-		}
-		std::cout << "nodo: " << cx << " " << cy << std::endl;
-		if (std::make_pair(cx, cy) == end)
-		{
-			return true;
-		}
-		data[cy][cx].visited[0] = 1; // ya se visito
-		for (int i = 0; i < dirX.size(); i++)
-		{
-			int newX = cx + dirX[i];
-			int newY = cy + dirY[i];
-			if (isInside(newX, newY) && !data[newY][newX].visited[0])
-			{
-				s.push({newX, newY});
-			}
-			
-		}
-	}
-	
-	return false;
+        path.push_back({cy, cx});
+
+        if (std::make_pair(cx, cy) == end) {
+            return true;
+        }
+
+        data[cy][cx].visited[0] = 1;
+
+        for (size_t i = 0; i < dirX.size(); i++) {
+            int newX = cx + dirX[i];
+            int newY = cy + dirY[i];
+            if (isInside(newX, newY) && !data[newY][newX].visited[0]) {
+                s.push({newX, newY});
+            }
+        }
+    }
+
+    return false;
 }
 
-bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end) {
-	std::queue<std::pair<int, int>> q;
-	q.push(start);
+bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector<std::pair<int, int>>& path) {
+    std::queue<std::pair<int, int>> q;
+    q.push(start);
 
-	while (!q.empty())
-	{
-		auto [cx, cy] = q.front();
-		q.pop();
+    while (!q.empty()) {
+        auto [cx, cy] = q.front();
+        q.pop();
 
-		if (!isInside(cx, cy) || data[cy][cx].visited[1])
-		{
-			continue;
-		}
-		std::cout << "nodo: " << cx << " " << cy << std::endl;
-		if (std::make_pair(cx, cy) == end)
-		{
-			return true;
-		}
-		data[cy][cx].visited[1] = 1; // ya se visito
+        if (!isInside(cx, cy) || data[cy][cx].visited[1]) {
+            continue;
+        }
 
-		for (int i = 0; i < dirX.size(); i++)
-		{
-			int newX = cx + dirX[i];
-			int newY = cy + dirY[i];
-			if (isInside(newX, newY) && !data[newY][newX].visited[1])
-			{
-				q.push({newX, newY});
-			}
-			
-		}
-	}
-	
+        path.push_back({cy, cx});
+
+        if (std::make_pair(cx, cy) == end) {
+            return true;
+        }
+
+        data[cy][cx].visited[1] = 1;
+
+        for (size_t i = 0; i < dirX.size(); i++) {
+            int newX = cx + dirX[i];
+            int newY = cy + dirY[i];
+            if (isInside(newX, newY) && !data[newY][newX].visited[1]) {
+                q.push({newX, newY});
+            }
+        }
+    }
+
+    return false;
 }

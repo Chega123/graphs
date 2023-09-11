@@ -1,6 +1,6 @@
 BIN = bin/main
 CC = g++
-FLAGS = -Wall -pedantic -std=c++11
+FLAGS = -Wall -pedantic -std=c++17
 INC = -I common/include
 LOC_LIB = common/linux_x86_64/libGLEW.a -lglfw
 SYS_LIB = -lGL -lm

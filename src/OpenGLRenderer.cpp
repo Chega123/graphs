@@ -1,9 +1,8 @@
 #include "OpenGLRenderer.h"
 #include <iostream>
 
-
-OpenGLRenderer::OpenGLRenderer(Matrix& m, float w, float h) // desaparecer la mayoria de codigo
-    : matrix(m), screenWidth(w), screenHeight(h), window(nullptr) {
+OpenGLRenderer::OpenGLRenderer(Matrix& m, float w, float h)
+    : window(nullptr), matrix(m), screenWidth(w), screenHeight(h) {
     nodeSize = 2.0f / ( 2*matrix.cols() + 1);
     spacing = nodeSize;
     std::cout << "Node Size: " << nodeSize << std::endl;
@@ -35,7 +34,7 @@ void OpenGLRenderer::initialize() {
 }
 
 
-void OpenGLRenderer::drawNode(int row, int col) { // entener lo que pasa
+void OpenGLRenderer::drawNode(int row, int col) {
     glColor3f(0, 1, 0);  // verde
 
     const int segments = 200;
@@ -101,6 +100,27 @@ void OpenGLRenderer::run() {
                 }
             }
         }
+        if (showDFSPath) {
+            glColor3f(1, 0, 0); // Rojo para el camino DFS
+            glBegin(GL_LINE_STRIP);
+            for (const auto& point : dfsPath) {
+                float x = -1 + (point.second + 0.5) * (nodeSize + spacing);
+                float y = -1 + (point.first + 0.5) * (nodeSize + spacing);
+                glVertex2f(x, y);
+            }
+            glEnd();
+        }
+
+        if (showBFSPath) {
+            glColor3f(0, 0, 1); // Azul para el camino BFS
+            glBegin(GL_LINE_STRIP);
+            for (const auto& point : bfsPath) {
+                float x = -1 + (point.second + 0.5) * (nodeSize + spacing);
+                float y = -1 + (point.first + 0.5) * (nodeSize + spacing);
+                glVertex2f(x, y);
+            }
+            glEnd();
+        }
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -129,4 +149,20 @@ void OpenGLRenderer::mouseCallback(GLFWwindow* window, int button, int action, i
             std::cout << "Clicked on matrix coordinates (" << row << ", " << col << ")" << std::endl;
         }
     }
+}
+
+void OpenGLRenderer::setDFSPath(const std::vector<std::pair<int, int>>& path) {
+    dfsPath = path;
+}
+
+void OpenGLRenderer::setBFSPath(const std::vector<std::pair<int, int>>& path) {
+    bfsPath = path;
+}
+
+void OpenGLRenderer::showDFS(bool show) {
+    showDFSPath = show;
+}
+
+void OpenGLRenderer::showBFS(bool show) {
+    showBFSPath = show;
 }

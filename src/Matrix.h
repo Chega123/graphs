@@ -37,8 +37,8 @@ public:
 
 	bool isInside(int x, int y);
 
-	bool DFS(std::pair<int, int> start, std::pair<int, int> end);
-	bool BFS(std::pair<int, int> start, std::pair<int, int> end);
+    bool DFS(std::pair<int, int> start, std::pair<int, int> end, std::vector<std::pair<int, int>>& path);
+    bool BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector<std::pair<int, int>>& path);
 };
 
 #endif // MATRIX_H
