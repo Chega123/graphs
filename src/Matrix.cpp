@@ -113,3 +113,61 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
 
     return false;
 }
+
+std::vector<std::pair<int, int>> Matrix::hillClimbing(int startX, int startY, int goalX, int goalY, int maxIterations) {
+	std::vector<std::pair<int, int>> path;
+	std::pair<int, int> currentPos(startX, startY);
+	std::pair<int, int> prevPos(-1, -1);
+	int iteration = 0;
+
+	while (!(currentPos.first == goalX && currentPos.second == goalY)) {
+		path.push_back(currentPos);
+
+		// Mark the current node as part of the Hill Climbing path
+		data[currentPos.first][currentPos.second].HillPath = true;
+
+		std::vector<std::pair<int, int>> neighbors;
+
+		for (int i = 0; i < 8; ++i) {
+			int newX = currentPos.first + dirX[i];
+			int newY = currentPos.second + dirY[i];
+
+			if (newX >= 0 && newX < data.size() && newY >= 0 && newY < data[0].size() &&
+				data[newX][newY].is_active && !(newX == prevPos.first && newY == prevPos.second)) {
+				neighbors.push_back(std::make_pair(newX, newY));
+			}
+		}
+
+		if (neighbors.empty()) {
+			// No valid neighbors left, indicating no path exists
+			std::cout << "No valid path exists." << std::endl;
+			return path;
+		}
+
+		// Ordenar por distancia euclidiana del objetivo
+			// sort(inicio del vector, fin del vector, fumada)
+			// Explicacion de fumada
+		std::sort(neighbors.begin(), neighbors.end(),
+			[goalX, goalY](const std::pair<int, int>& a, const std::pair<int, int>& b) {
+				// da y db es la distancia entre el punto actual y el punto final
+				// da y db se calculan con pitágoras pero no es necesario sacarle raiz, igual se ordenan
+				int da = (a.first - goalX) * (a.first - goalX) +
+					(a.second - goalY) * (a.second - goalY);
+				int db = (b.first - goalX) * (b.first - goalX) +
+					(b.second - goalY) * (b.second - goalY);
+				// se ordenan según la distancia de menor a mayor
+				return da < db;
+			});
+
+		prevPos = currentPos; // Update prevPos before moving
+		currentPos = neighbors[0]; // Move to the best neighbor
+
+		iteration++;
+		if (iteration >= maxIterations) {
+			std::cout << "Terminated due to reaching the maximum number of iterations." << std::endl;
+			break;
+		}
+	}
+
+	return path;
+}
