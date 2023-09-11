@@ -1,5 +1,23 @@
 #include "OpenGLRenderer.h"
 #include <iostream>
+#include <ostream>
+
+const struct Color Color::Black = { 0, 0, 0, 0 };
+const struct Color Color::White = { 1, 1, 1, 1 };
+const struct Color Color::Grey = { 0.5f, 0.5f, 0.5f, 0.3f };
+const struct Color Color::Red = { 1, 0, 0, 1 };
+const struct Color Color::Green = { 0, 1, 0, 1 };
+const struct Color Color::Blue = { 0, 0, 1, 1 };
+
+static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        double x, y;
+        OpenGLRenderer* renderer = static_cast<OpenGLRenderer*>(glfwGetWindowUserPointer(window));
+        glfwGetCursorPos(window, &x, &y);
+        renderer->handleMouseClick(x, y);
+        // std::cout << "Click en: " << x << " " << y << std::endl;
+    }
+}
 
 OpenGLRenderer::OpenGLRenderer(Matrix& m, float w, float h)
     : window(nullptr), matrix(m), screenWidth(w), screenHeight(h) {
@@ -29,15 +47,15 @@ void OpenGLRenderer::initialize() {
     }
 
     glfwMakeContextCurrent(window);
-    glfwSetMouseButtonCallback(window, mouseCallback);
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetWindowUserPointer(window, this);
 }
 
 
-void OpenGLRenderer::drawNode(int row, int col) {
-    glColor3f(0, 1, 0);  // verde
+void OpenGLRenderer::drawNode(int row, int col, Color color) {
+    glColor4f(color.r, color.g, color.b, color.a);  // verde
 
-    const int segments = 200;
+    const int segments = 20;
     const float angleIncrement = 2.0f * M_PI / segments;
 
     float xCenter = -1 + (col + 0.5) * (nodeSize + spacing);
@@ -56,7 +74,7 @@ void OpenGLRenderer::drawNode(int row, int col) {
     
 }
 
-void OpenGLRenderer::drawConnections(int i, int j) {
+void OpenGLRenderer::drawConnections(int i, int j, Color color) {
     for (int dir = 0; dir < 8; dir++) {
         int ni = i + matrix.dirX[dir];
         int nj = j + matrix.dirY[dir];
@@ -65,7 +83,7 @@ void OpenGLRenderer::drawConnections(int i, int j) {
         {
             if (matrix.isActive(ni, nj))
             {
-                drawLink(i, j, ni, nj);
+                drawLink(i, j, ni, nj, color);
             }
             
         }
@@ -73,8 +91,8 @@ void OpenGLRenderer::drawConnections(int i, int j) {
     }
 }
 
-void OpenGLRenderer::drawLink(int i1, int j1, int i2, int j2) {
-    glColor3f(0.4f, 0.4f, 0.4f); // color del enlace (gris claro)
+void OpenGLRenderer::drawLink(int i1, int j1, int i2, int j2, Color color) {
+    glColor4f(color.r, color.g, color.b, color.a);
 
     float x1 = -1 + (j1 + 0.5) * (nodeSize + spacing);
     float y1 = -1 + (i1 + 0.5) * (nodeSize + spacing);
@@ -95,29 +113,23 @@ void OpenGLRenderer::run() {
         for (int i = 0; i < matrix.rows(); i++) {
             for (int j = 0; j < matrix.cols(); j++) {
                 if (matrix.isActive(i, j)) {
-                    drawConnections(i, j);
-                    drawNode(i, j);
+                    drawNode(i, j, Color::Green);
+                    drawConnections(i, j, Color::Grey);
                 }
             }
         }
         if (showDFSPath) {
-            glColor3f(1, 0, 0); // Rojo para el camino DFS
             glBegin(GL_LINE_STRIP);
             for (const auto& point : dfsPath) {
-                float x = -1 + (point.second + 0.5) * (nodeSize + spacing);
-                float y = -1 + (point.first + 0.5) * (nodeSize + spacing);
-                glVertex2f(x, y);
+                drawNode(point.first, point.second, Color::Red);
             }
             glEnd();
         }
 
         if (showBFSPath) {
-            glColor3f(0, 0, 1); // Azul para el camino BFS
             glBegin(GL_LINE_STRIP);
             for (const auto& point : bfsPath) {
-                float x = -1 + (point.second + 0.5) * (nodeSize + spacing);
-                float y = -1 + (point.first + 0.5) * (nodeSize + spacing);
-                glVertex2f(x, y);
+                drawNode(point.first, point.second, Color::Blue);
             }
             glEnd();
         }
@@ -127,26 +139,37 @@ void OpenGLRenderer::run() {
     }
 }
 
-void OpenGLRenderer::mouseCallback(GLFWwindow* window, int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        // Obtener el objeto OpenGLRenderer
-        OpenGLRenderer* renderer = static_cast<OpenGLRenderer*>(glfwGetWindowUserPointer(window));
-        
-        double mx, my;
-        glfwGetCursorPos(window, &mx, &my);
+/* void OpenGLRenderer::handleMouseClick(double x, double y) {
+    int row = (y / (nodeSize + spacing)) * matrix.rows();
+    int col = (x / (nodeSize + spacing)) * matrix.cols();
 
-        int width, height;
-        glfwGetWindowSize(window, &width, &height);
-        
-        my = height - my;
-        float nx = mx / (float)width * renderer->matrix.cols() * renderer->nodeSize;
-        float ny = my / (float)height * renderer->matrix.rows() * renderer->nodeSize;
-        
-        int row = (int)(ny / renderer->nodeSize);
-        int col = (int)(nx / renderer->nodeSize);
-        
-        if (renderer->matrix.isActive(row, col)) {
-            std::cout << "Clicked on matrix coordinates (" << row << ", " << col << ")" << std::endl;
+    std::cout << "Row: " << row << " Col: " << col << std::endl;
+
+    if (row < matrix.rows() && col < matrix.cols()) {
+        if (matrix.isActive(row, col)) {
+            // matrix.toggleNode(row, col);// cambiar a nodos del usuario
+        }
+    }
+} */
+
+void OpenGLRenderer::handleMouseClick(double x, double y) {
+    int windowWidth, windowHeight;
+    glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+    double normalizedX = x / windowWidth;
+    double normalizedY = 1.0 - (y / windowHeight);  // Invertir Y
+
+    double glX = normalizedX * 2.0 - 1.0;
+    double glY = normalizedY * 2.0 - 1.0;
+
+    int row = (glY + 1) / 2 * matrix.rows();  // Ajustar para el rango [0, matrix.rows()]
+    int col = (glX + 1) / 2 * matrix.cols();  // Ajustar para el rango [0, matrix.cols()]
+
+    std::cout << "Row: " << row << " Col: " << col << std::endl;
+
+    if (row < matrix.rows() && col < matrix.cols()) {
+        if (matrix.isActive(row, col)) {
+            // matrix.toggleNode(row, col);// cambiar a nodos del usuario
         }
     }
 }

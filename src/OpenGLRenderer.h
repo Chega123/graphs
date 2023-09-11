@@ -4,6 +4,17 @@
 #include <GLFW/glfw3.h>
 #include "Matrix.h"  // Asegúrate de que la clase Matrix esté disponible
 
+struct Color
+{
+	float r, g, b, a;
+	static const Color Black;
+	static const Color White;
+	static const Color Grey;
+	static const Color Red;
+	static const Color Green;
+	static const Color Blue;
+};
+
 class OpenGLRenderer {
 private:
     GLFWwindow* window;
@@ -13,9 +24,9 @@ private:
     float screenWidth;
     float screenHeight;
 
-    void drawNode(int x, int y);
-    void drawConnections(int i, int j);
-    void drawLink(int x1, int y1, int x2, int y2);
+    void drawNode(int x, int y, Color color);
+    void drawConnections(int i, int j, Color color);
+    void drawLink(int x1, int y1, int x2, int y2, Color color);
     std::vector<std::pair<int, int>> dfsPath;
     std::vector<std::pair<int, int>> bfsPath;
     bool showDFSPath;
@@ -28,9 +39,9 @@ public:
     void initialize();
     void run();
 
-    static void mouseCallback(GLFWwindow* window, int button, int action, int mods);
     void showDFS(bool show);
     void showBFS(bool show);
+    void handleMouseClick(double x, double y);
     void setDFSPath(const std::vector<std::pair<int, int>>& path);
     void setBFSPath(const std::vector<std::pair<int, int>>& path);
 };

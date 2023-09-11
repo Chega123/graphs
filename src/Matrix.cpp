@@ -54,6 +54,11 @@ bool Matrix::DFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
     std::stack<std::pair<int, int>> s;
     s.push(start);
 
+    if (!data[start.second][start.first].is_active || !data[end.second][end.first].is_active) {
+        std::cout << "Nodos de entrada no validos" << std::endl;
+        return false;
+    }
+
     while (!s.empty()) {
         auto [cx, cy] = s.top();
         s.pop();
@@ -62,6 +67,7 @@ bool Matrix::DFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
             continue;
         }
 
+        std::cout << "Node: " << cx << " " << cy << std::endl;
         path.push_back({cy, cx});
 
         if (std::make_pair(cx, cy) == end) {
@@ -73,7 +79,7 @@ bool Matrix::DFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
         for (size_t i = 0; i < dirX.size(); i++) {
             int newX = cx + dirX[i];
             int newY = cy + dirY[i];
-            if (isInside(newX, newY) && !data[newY][newX].visited[0]) {
+            if (isInside(newX, newY) && !data[newY][newX].visited[0] && data[newY][newX].is_active) {
                 s.push({newX, newY});
             }
         }
@@ -85,6 +91,11 @@ bool Matrix::DFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
 bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector<std::pair<int, int>>& path) {
     std::queue<std::pair<int, int>> q;
     q.push(start);
+
+    if (!data[start.second][start.first].is_active || !data[end.second][end.first].is_active) {
+        std::cout << "Nodos de entrada no validos" << std::endl;
+        return false;
+    }
 
     while (!q.empty()) {
         auto [cx, cy] = q.front();
@@ -105,7 +116,7 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
         for (size_t i = 0; i < dirX.size(); i++) {
             int newX = cx + dirX[i];
             int newY = cy + dirY[i];
-            if (isInside(newX, newY) && !data[newY][newX].visited[1]) {
+            if (isInside(newX, newY) && !data[newY][newX].visited[1] && data[newY][newX].is_active) {
                 q.push({newX, newY});
             }
         }
@@ -114,7 +125,7 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
     return false;
 }
 
-std::vector<std::pair<int, int>> Matrix::hillClimbing(int startX, int startY, int goalX, int goalY, int maxIterations) {
+/* std::vector<std::pair<int, int>> Matrix::hillClimbing(int startX, int startY, int goalX, int goalY, int maxIterations) {
 	std::vector<std::pair<int, int>> path;
 	std::pair<int, int> currentPos(startX, startY);
 	std::pair<int, int> prevPos(-1, -1);
@@ -170,4 +181,4 @@ std::vector<std::pair<int, int>> Matrix::hillClimbing(int startX, int startY, in
 	}
 
 	return path;
-}
+} */
