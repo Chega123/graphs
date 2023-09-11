@@ -23,3 +23,8 @@ sudo apt install zlib1g-dev
 - Cuando ejecuten el Makefile (sin errores)
     - Se creara una carpeta llamada `bin`
     - Dentro se encontrará el ejecutable
+
+Para ejecutar
+```
+./bin/main
+```
