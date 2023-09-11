@@ -39,6 +39,7 @@ public:
 
     bool DFS(std::pair<int, int> start, std::pair<int, int> end, std::vector<std::pair<int, int>>& path);
     bool BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector<std::pair<int, int>>& path);
+    std::vector<std::pair<int, int>> hillClimbing(int startX, int startY, int goalX, int goalY, int maxIterations);
 };
 
 #endif // MATRIX_H
