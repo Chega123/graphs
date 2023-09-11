@@ -7,3 +7,4 @@ grapsh code for C++
 - Detectar posiciones de nodo correctamente haciendo click
 - Graficar el bfs y dfs con visited
 - Mas to-dos proximamente aldfjaldkjf
+- test commit on linux
