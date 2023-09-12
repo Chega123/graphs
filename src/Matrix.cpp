@@ -134,9 +134,6 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
 	while (!(currentPos.first == goalX && currentPos.second == goalY)) {
 		path.push_back(currentPos);
 
-		// Mark the current node as part of the Hill Climbing path
-		data[currentPos.first][currentPos.second].HillPath = true;
-
 		std::vector<std::pair<int, int>> neighbors;
 
 		for (int i = 0; i < 8; ++i) {
