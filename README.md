@@ -31,4 +31,3 @@ Para ejecutar
 
 ## Error Notes
 
-- En algunas dimensiones de ventana si sale los nodos rojos, en otras no (UbuntuVM)
