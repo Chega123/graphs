@@ -9,7 +9,7 @@ grapsh code for C++
 - Mas to-dos proximamente aldfjaldkjf
 - test commit on linux
 
-#$ Solving problems on Linux
+## Solving problems on Linux
 
 - Ejecutar con MakeFile
     - Esto asegura estar usando c++17
