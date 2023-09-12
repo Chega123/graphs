@@ -1,7 +1,7 @@
 # graphs
 grapsh code for C++
 
-### To - do
+## To - do
 
 - Revisar los makefiles para win32 (o instalense linux xd)
 - Detectar posiciones de nodo correctamente haciendo click
@@ -9,7 +9,7 @@ grapsh code for C++
 - Mas to-dos proximamente aldfjaldkjf
 - test commit on linux
 
-# Solving problems on Linux
+#$ Solving problems on Linux
 
 - Ejecutar con MakeFile
     - Esto asegura estar usando c++17
@@ -28,3 +28,7 @@ Para ejecutar
 ```
 ./bin/main
 ```
+
+## Error Notes
+
+- En algunas dimensiones de ventana si sale los nodos rojos, en otras no (UbuntuVM)
