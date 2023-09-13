@@ -125,7 +125,7 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
     return false;
 }
 
-/* std::vector<std::pair<int, int>> Matrix::hillClimbing(int startX, int startY, int goalX, int goalY, int maxIterations) {
+ std::vector<std::pair<int, int>> Matrix::hillClimbing(int startX, int startY, int goalX, int goalY, int maxIterations) {
 	std::vector<std::pair<int, int>> path;
 	std::pair<int, int> currentPos(startX, startY);
 	std::pair<int, int> prevPos(-1, -1);
@@ -140,7 +140,7 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
 			int newX = currentPos.first + dirX[i];
 			int newY = currentPos.second + dirY[i];
 
-			if (newX >= 0 && newX < data.size() && newY >= 0 && newY < data[0].size() &&
+			if (newX >= 0 && static_cast<size_t>(newX)< data.size() && newY >= 0 && static_cast<size_t>(newY) < data[0].size() &&
 				data[newX][newY].is_active && !(newX == prevPos.first && newY == prevPos.second)) {
 				neighbors.push_back(std::make_pair(newX, newY));
 			}
@@ -178,4 +178,4 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
 	}
 
 	return path;
-} */
+} 
