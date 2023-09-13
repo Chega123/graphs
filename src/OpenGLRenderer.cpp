@@ -9,6 +9,8 @@ const struct Color Color::Red = { 1, 0, 0, 1 };
 const struct Color Color::Green = { 0, 1, 0, 1 };
 const struct Color Color::Blue = { 0, 0, 1, 1 };
 const struct Color Color::Purple = { 0.5, 0, 0.5, 1 };
+const struct Color Color::Cyan = { 0, 1, 1, 1 };
+const struct Color Color::Orange = {  1, 0.5, 0,1 };
 
 static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
@@ -16,7 +18,7 @@ static void mouseButtonCallback(GLFWwindow* window, int button, int action, int 
         OpenGLRenderer* renderer = static_cast<OpenGLRenderer*>(glfwGetWindowUserPointer(window));
         glfwGetCursorPos(window, &x, &y);
         renderer->handleMouseClick(x, y);
-        // std::cout << "Click en: " << x << " " << y << std::endl;
+        std::cout << "Click en: " << x << " " << y << std::endl;
     }
 }
 
@@ -40,7 +42,7 @@ void OpenGLRenderer::initialize() {
         exit(-1);
     }
 
-    window = glfwCreateWindow(screenWidth, screenHeight, "Matrix Graph", NULL, NULL);
+    window = glfwCreateWindow(screenWidth, screenHeight, "OpenGL", NULL, NULL);
     if (!window) {
         std::cerr << "Error al crear ventana" << std::endl;
         glfwTerminate();
@@ -132,12 +134,23 @@ void OpenGLRenderer::run() {
             glBegin(GL_LINE_STRIP);
             for (const auto& point : bfsPath) 
             {
-                int x = point.first;
-                int y = point.second;
-                if (matrix.data[y][x].visited[0] == 1)
-                    drawNode(x, y, Color::Purple);
-                else
-                    drawNode(x, y, Color::Blue);
+                drawNode(point.first, point.second, Color::Blue);
+            }
+            glEnd();
+        }
+
+        if (showHCPath) {
+            glBegin(GL_LINE_STRIP);
+            for (const auto& point : hcPath) {
+                drawNode(point.first, point.second, Color::Cyan);
+            }
+            glEnd();
+        }
+
+        if (showAStarPath) {
+            glBegin(GL_LINE_STRIP);
+            for (const auto& point : astarPath) {
+                drawNode(point.first, point.second, Color::Orange);
             }
             glEnd();
         }
@@ -190,10 +203,24 @@ void OpenGLRenderer::setBFSPath(const std::vector<std::pair<int, int>>& path) {
     bfsPath = path;
 }
 
+void OpenGLRenderer::setHCPath(const std::vector<std::pair<int, int>>& path) {
+    hcPath = path;
+}
+
+void OpenGLRenderer::setAStarPath(const std::vector<std::pair<int, int>>& path) {
+    astarPath = path;
+}
+
 void OpenGLRenderer::showDFS(bool show) {
     showDFSPath = show;
 }
 
 void OpenGLRenderer::showBFS(bool show) {
     showBFSPath = show;
+}
+void OpenGLRenderer::showAstar(bool show) {
+    showAStarPath = show;
+}
+void OpenGLRenderer::showHC(bool show) {
+    showHCPath = show;
 }

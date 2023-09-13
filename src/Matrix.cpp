@@ -67,9 +67,7 @@ bool Matrix::DFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
             continue;
         }
 
-        std::cout << "Node: " << cx << " " << cy << std::endl;
         path.push_back({cy, cx});
-
         if (std::make_pair(cx, cy) == end) {
             return true;
         }
