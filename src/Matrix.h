@@ -15,6 +15,7 @@ private:
 	class Node {
 	public:
 		bool is_active;
+		std::pair<int,int>parent;
 		int visited[2] = {0, 0}; // 0: DFS  1: BFS
 		Node();
 	};
@@ -40,6 +41,10 @@ public:
     bool DFS(std::pair<int, int> start, std::pair<int, int> end, std::vector<std::pair<int, int>>& path);
     bool BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector<std::pair<int, int>>& path);
     std::vector<std::pair<int, int>> hillClimbing(int startX, int startY, int goalX, int goalY, int maxIterations);
+	int calculateHeuristic(int x1,int y1, int x2,int y2);
+	int calculatedistance(const std::pair<int,int>& nodeA, const std::pair<int,int>& nodeB );
+	std::vector<std::pair<int,int>> recontructPath(std::pair<int,int>&goalNode);
+	std::vector<std::pair<int,int>> Astar(int startX,int starY,int goalX,int goalY,int iterationLimit);
 };
 
 #endif // MATRIX_H

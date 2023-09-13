@@ -125,12 +125,24 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
     return false;
 }
 
+int Matrix::calculatedistance(const std::pair<int,int>& nodeA, const std::pair<int,int>& nodeB ){
+    int dx= nodeA.first-nodeB.first;
+    int dy= nodeA.second-nodeB.second;
+    return dx*dx+dy*dy;
+}
+
+int Matrix::calculateHeuristic(int x1,int y1, int x2,int y2){
+    int dx=x1-x2;
+    int dy=y1-y2;
+    return dx*dx+dy*dy;
+};
+
+
  std::vector<std::pair<int, int>> Matrix::hillClimbing(int startX, int startY, int goalX, int goalY, int maxIterations) {
 	std::vector<std::pair<int, int>> path;
 	std::pair<int, int> currentPos(startX, startY);
 	std::pair<int, int> prevPos(-1, -1);
 	int iteration = 0;
-
 	while (!(currentPos.first == goalX && currentPos.second == goalY)) {
 		path.push_back(currentPos);
 
@@ -156,13 +168,11 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
 			// sort(inicio del vector, fin del vector, fumada)
 			// Explicacion de fumada
 		std::sort(neighbors.begin(), neighbors.end(),
-			[goalX, goalY](const std::pair<int, int>& a, const std::pair<int, int>& b) {
+			[this,goalX, goalY](const std::pair<int, int>& a, const std::pair<int, int>& b) {
 				// da y db es la distancia entre el punto actual y el punto final
 				// da y db se calculan con pitágoras pero no es necesario sacarle raiz, igual se ordenan
-				int da = (a.first - goalX) * (a.first - goalX) +
-					(a.second - goalY) * (a.second - goalY);
-				int db = (b.first - goalX) * (b.first - goalX) +
-					(b.second - goalY) * (b.second - goalY);
+                int da=calculatedistance(a,std::make_pair(goalX, goalY));
+                int db=calculatedistance(b,std::make_pair(goalX, goalY));
 				// se ordenan según la distancia de menor a mayor
 				return da < db;
 			});
@@ -179,3 +189,99 @@ bool Matrix::BFS(std::pair<int, int> start, std::pair<int, int> end, std::vector
 
 	return path;
 } 
+std::vector<std::pair<int,int>> Matrix::recontructPath(std::pair<int,int>&goalNode){
+    std::vector<std::pair<int,int>> path;
+    std::pair<int,int> currentnode=goalNode;
+    while(currentnode!=std::pair<int,int>(-1,-1))
+    {
+        path.push_back(currentnode);
+        currentnode= data[currentnode.second][currentnode.first].parent;
+    }
+    std::reverse(path.begin(),path.end());
+    return path;
+}
+
+std::vector<std::pair<int,int>> Matrix::Astar(int startX,int startY,int goalX,int goalY,int iterationLimit){
+    std::vector<std::pair<int,int>>path;
+    int iterations = 0;
+    //nodo q usaremos pa la funcion :D
+    struct NodeAstar{
+        int x,y,g,h,f;//g=costo desde el inicio, h=distancia al objetivo, f=costo total
+        bool operator<(const NodeAstar& other) const {
+            return f > other.f; // sobrecarga para coomparar prioridad (mayor prioridad mientras mas bajo es f)
+        }
+    };
+
+    //verificar  si las coordenadas de inicio estan dentro de la matriz y son nodos activos
+    if(!isInside(startX,startY)||!isInside(goalX,goalY)||!data[startY][startX].is_active||!data[goalY][goalX].is_active){
+        std::cout<<"No valid start nodes:c"<<std::endl;
+        return path;
+    }
+    
+    // Crear un conjunto de nodos cerrados para evitar duplicados
+    std::vector<std::vector<bool>> closedSet(data.size(), std::vector<bool>(data[0].size(), false));
+
+    // Cola de prioridad para almacenar los nodos abiertos (osea las opciones a donde se puede mover)
+    std::priority_queue<NodeAstar> openSet;
+
+    //nodo de inicio
+    NodeAstar starNode{startX,startY,calculateHeuristic(startX, startY, goalX, goalY), 0};
+    openSet.push(starNode);
+
+    //registro de los padres de nodos
+    std::vector<std::vector<std::pair<int, int>>> cameFrom(data.size(), std::vector<std::pair<int, int>>(data[0].size(), {-1, -1}));
+
+    while(!openSet.empty()&&(iterationLimit == -1 || iterations < iterationLimit)) { // -1 significa sin límite
+
+        //obtener nodo con menor costo total estimado de la cola
+        NodeAstar current=openSet.top();
+        openSet.pop();
+        int x=current.x;
+        int y=current.y;
+
+
+        //Comprobar si llego al objetivo
+        if(x==goalX && goalY){
+            while(x!=startX||y!=startY){ //reconstruir el camino desde el objetivo hasta el inicio
+                path.push_back({x,y});
+                auto prev=cameFrom[y][x];
+                x=prev.first;
+                y=prev.second;
+            }
+        }
+
+        //marcar nodo actual como visitado
+        closedSet[y][x]=true;
+
+        //crear sucessores
+        for(size_t i=0;i<dirX.size();i++){
+
+            int newX=x+dirX[i];
+            int newY=y+dirY[i];
+
+            //ver si estan dentro o si son activos
+
+            if(isInside(newX,newY)&&data[newY][newX].is_active){
+                int Gscore= current.g+1;
+
+                //si tiene costo menor y esta en el closedSet no entra ya que es un nodo visitado
+                if(closedSet[newY][newX]&& Gscore>=current.g){continue;}
+
+                if(!closedSet[newY][newX]||Gscore<current.g){
+                    //calcular heuristica para el sucesor
+                    int h=calculateHeuristic(newX,newY,goalX,goalY);
+
+                    //agregar sucesor al conjunto abierto y actualizar sus valores
+                    NodeAstar neighbor{newX,newY,Gscore,h,Gscore+h};
+                    openSet.push(neighbor),
+
+                    //registrar al padre del sucesor
+                    cameFrom[newY][newX]={x,y};
+                }
+            }
+        }   
+        iterations+=1;
+    }
+    std::cout << "Didn't found path" << std::endl;
+    return path;
+}

@@ -3,8 +3,8 @@
 
 int main() {
     std::cout<<"holis";
-    Matrix matrix(100, 100);
-    matrix.ThanosSnap(5);
+    Matrix matrix(100,100);
+    matrix.ThanosSnap(0);
 
     OpenGLRenderer renderer(matrix);
     renderer.initialize();
@@ -14,10 +14,10 @@ int main() {
     std::vector<std::pair<int, int>> dfsPath; // Almacena el camino DFS
     std::vector<std::pair<int, int>> bfsPath; // Almacena el camino BFS
 
-    bool foundDFS = matrix.DFS({15, 58}, {20, 25}, dfsPath);
-    bool foundBFS = matrix.BFS({58, 15}, {20, 25}, bfsPath);
+    bool foundDFS = matrix.DFS({15, 85}, {19, 42}, dfsPath);
+    bool foundBFS = matrix.BFS({15, 55}, {39, 62}, bfsPath);
     
-    std::vector<std::pair<int, int>> hillClimbingPath = matrix.hillClimbing(15, 58, 48, 71, 4000);
+    std::vector<std::pair<int, int>> hillClimbingPath = matrix.hillClimbing(15, 5,85,71, 100);
 
     if (!hillClimbingPath.empty()) {
         std::cout << "Camino encontrado por hillClimbing:" << std::endl;
@@ -25,8 +25,25 @@ int main() {
             std::cout << "(" << point.first << ", " << point.second << ") ";
         }
         std::cout << std::endl;
-    } else {
+    } 
+
+    else {
         std::cout << "No se encontró un camino válido por hillClimbing." << std::endl;
+    }
+
+    std::vector<std::pair<int, int>> astarPath = matrix.Astar(35,15,28,17,100);
+
+    if (!astarPath.empty()) {
+    std::cout << "Camino encontrado por A*:" << std::endl;
+
+    for (const auto& point : astarPath) {
+        std::cout << "(" << point.first << ", " << point.second << ") ";
+    }
+    std::cout << std::endl;
+    } 
+
+    else {
+    std::cout << "No se encontró un camino válido por A*." << std::endl;
     }
 
     std::cout << "DFS: Nodo final " << (foundDFS ? "encontrado": "no encontrado") << std::endl;
