@@ -3,8 +3,8 @@
 
 int main() {
     std::cout<<"holis";
-    Matrix matrix(100,100);
-    matrix.ThanosSnap(0);
+    Matrix matrix(100, 100);
+    matrix.ThanosSnap(5);
 
     OpenGLRenderer renderer(matrix);
     renderer.initialize();

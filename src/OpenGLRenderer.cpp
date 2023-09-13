@@ -8,6 +8,7 @@ const struct Color Color::Grey = { 0.5f, 0.5f, 0.5f, 0.3f };
 const struct Color Color::Red = { 1, 0, 0, 1 };
 const struct Color Color::Green = { 0, 1, 0, 1 };
 const struct Color Color::Blue = { 0, 0, 1, 1 };
+const struct Color Color::Purple = { 0.5, 0, 0.5, 1 };
 
 static void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
@@ -126,10 +127,17 @@ void OpenGLRenderer::run() {
             glEnd();
         }
 
-        if (showBFSPath) {
+        if (showBFSPath) 
+        {
             glBegin(GL_LINE_STRIP);
-            for (const auto& point : bfsPath) {
-                drawNode(point.first, point.second, Color::Blue);
+            for (const auto& point : bfsPath) 
+            {
+                int x = point.first;
+                int y = point.second;
+                if (matrix.data[y][x].visited[0] == 1)
+                    drawNode(x, y, Color::Purple);
+                else
+                    drawNode(x, y, Color::Blue);
             }
             glEnd();
         }
