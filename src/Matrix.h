@@ -11,7 +11,8 @@
 #include <queue>
 
 class Matrix {
-private:
+//private:
+public: //asi es, hice toda una clase pública
 	class Node {
 	public:
 		bool is_active;
@@ -21,7 +22,7 @@ private:
 
 	std::vector<std::vector<Node>> data;
 
-public:
+//public:
 	std::vector<int> dirX;
 	std::vector<int> dirY;
 

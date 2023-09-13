@@ -13,6 +13,7 @@ struct Color
 	static const Color Red;
 	static const Color Green;
 	static const Color Blue;
+    static const Color Purple;
 };
 
 class OpenGLRenderer {

@@ -4,7 +4,7 @@
 int main() {
     std::cout<<"holis";
     Matrix matrix(100, 100);
-    matrix.ThanosSnap(5);
+    matrix.ThanosSnap(50);
 
     OpenGLRenderer renderer(matrix);
     renderer.initialize();
